@@ -1,0 +1,134 @@
+import java.util.Scanner;
+
+class Operation {
+    int front = -1;
+    int rear = -1;
+    int size = 5;
+    String[] queue = new String[size];
+
+    void Addevent(String event) {
+        if ((rear + 1) % size == front) {
+            System.out.println("Queue Overflow! Cannot add new event.");
+        } else {
+            if (front == -1) {
+                front = 0;
+            }
+            rear = (rear + 1) % size;
+            queue[rear] = event;
+            System.out.println(event + " is added to the queue");
+        }
+    }
+
+    void Processnextevent() {
+        if (front == -1) {
+            System.out.println("Cannot process next event");
+        } else {
+            System.out.println(queue[front] + " event is processed (completed)");
+            if (front == rear) {
+                front = -1;
+                rear = -1;
+            } else {
+                front = (front + 1) % size;
+            }
+        }
+    }
+
+    void displayPendingevents() {
+        if (front == -1) {
+            System.out.println("No pending events");
+        } else {
+            System.out.println("Pending Events:");
+            int i = front;
+            while (true) {
+                System.out.println(queue[i]);
+                if (i == rear) break;
+                i = (i + 1) % size;
+            }
+        }
+    }
+
+    void cancelEvent(String event) {
+        if (front == -1) {
+            System.out.println("Queue is empty. Cannot cancel.");
+            return;
+        }
+
+        boolean found = false;
+        int count = (rear >= front) ? (rear - front + 1) : (size - front + rear + 1);
+        int i = front;
+
+        for (int c = 0; c < count; c++) {
+            if (queue[i].equals(event)) {
+                found = true;
+                // Shift elements to fill the gap created by removing event[i]
+                for (int j = i; j != rear; j = (j + 1) % size) {
+                    int nextIndex = (j + 1) % size;
+                    queue[j] = queue[nextIndex];
+                }
+                queue[rear] = null;
+                // Update rear pointer
+                if (rear == front) { // last element removed
+                    front = -1;
+                    rear = -1;
+                } else {
+                    rear = (rear - 1 + size) % size;
+                }
+                System.out.println("Event \"" + event + "\" canceled successfully.");
+                break;
+            }
+            i = (i + 1) % size;
+        }
+
+        if (!found) {
+            System.out.println("Event \"" + event + "\" not found or already processed.");
+        }
+    }
+}
+
+public class Event {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Operation obj1 = new Operation();
+        boolean exit = false;
+
+        while (!exit) {
+            System.out.println("\n--- Real Time Processing Event ---");
+            System.out.println("1. Add event");
+            System.out.println("2. Process the next event");
+            System.out.println("3. Display pending events");
+            System.out.println("4. Cancel an event");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter your choice: ");
+            String choice = sc.nextLine();
+
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter the event to add: ");
+                    String event = sc.nextLine();
+                    obj1.Addevent(event);
+                    break;
+                case "2":
+                    obj1.Processnextevent();
+                    break;
+                case "3":
+                    obj1.displayPendingevents();
+                    break;
+                case "4":
+                    System.out.print("Enter the event to cancel: ");
+                    String cancelEvent = sc.nextLine();
+                    obj1.cancelEvent(cancelEvent);
+                    break;
+                case "5":
+                    System.out.println("Exiting the event system.");
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+
+        sc.close();
+    }
+}
+
