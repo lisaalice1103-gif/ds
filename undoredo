@@ -1,0 +1,83 @@
+import java.util.Scanner;
+ class StringStack {
+    String[] stack = new String[100];
+    int top =-1;
+    void push(String x) {
+        if (top == 99) {
+            System.out.println("Stack overflow");
+        return;
+        }
+        stack[++top] = x;
+    }
+    String pop() {
+        if (top ==-1) {
+            System.out.println("Stack underflow");
+            return ""; // Return empty string if underflow
+        }
+        return stack[top--];
+    }
+    boolean isEmpty() {
+        return top ==-1;
+    }
+    void clear() {
+        top =-1;
+    }
+ }
+ public class TextEditor {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        StringStack undoStack = new StringStack();
+        StringStack redoStack = new StringStack();
+        String document = "";
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("---- MENU----");
+            System.out.println("1. Make a Change");
+            System.out.println("2. Undo");
+            System.out.println("3. Redo");
+            System.out.println("4. Display Document");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume newline
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the text to add: ");
+                    String text = sc.nextLine();
+                    undoStack.push(document); // Save current state for undo
+                    document += text;
+                    redoStack.clear();
+                    // Clear redo stack after new change
+                    System.out.println("Change applied.");
+                    break;
+                case 2:
+                    if (!undoStack.isEmpty()) {
+                        redoStack.push(document); // Save current state for redo
+                        document = undoStack.pop(); // Undo change
+                        System.out.println("Undo done.");
+                    } else {
+                        System.out.println("Nothing to undo.");
+                    }
+                    break;
+                case 3:
+                    if (!redoStack.isEmpty()) {
+                        undoStack.push(document); // Save current state for undo
+                        document = redoStack.pop(); // Redo change
+                        System.out.println("Redo done.");
+                    } else {
+                        System.out.println("Nothing to redo.");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Current document is: " + document);
+                    break;
+                case 5:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+        sc.close();
+    }
+}
