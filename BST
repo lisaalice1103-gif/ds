@@ -1,0 +1,234 @@
+import java.util.Scanner;
+
+class Node {
+    int data;
+    Node left, right;
+
+    Node(int data) {
+        this.data = data;
+        left = right = null;
+    }
+}
+
+public class BinarySearchTree1 {
+    static Node root = null;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int choice, n, data;
+
+        while (true) {
+            System.out.println("\n1. Insertion in Binary Search Tree");
+            System.out.println("2. Delete Element in Binary Search Tree");
+            System.out.println("3. Inorder Traversal");
+            System.out.println("4. Preorder Traversal");
+            System.out.println("5. Postorder Traversal");
+            System.out.println("6. Search Element in Binary Search Tree");
+            System.out.println("7. Display Binary Search Tree");
+            System.out.println("8. Exit");
+            System.out.print("Enter your choice: ");
+            if (!sc.hasNextInt()) {
+                System.out.println("Please enter a valid integer choice.");
+                sc.next(); // consume bad token
+                continue;
+            }
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter number of nodes to insert: ");
+                    if (!sc.hasNextInt()) {
+                        System.out.println("Invalid number.");
+                        sc.next();
+                        break;
+                    }
+                    n = sc.nextInt();
+                    System.out.println("Enter " + n + " elements:");
+                    for (int i = 0; i < n; i++) {
+                        if (!sc.hasNextInt()) {
+                            System.out.println("Invalid element. Skipping.");
+                            sc.next();
+                            i--;
+                            continue;
+                        }
+                        data = sc.nextInt();
+                        root = insert(root, data);
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter the element to delete: ");
+                    if (!sc.hasNextInt()) {
+                        System.out.println("Invalid element.");
+                        sc.next();
+                        break;
+                    }
+                    data = sc.nextInt();
+                    if (search(root, data)) {
+                        root = delete(root, data);
+                        System.out.println(data + " deleted (if it existed).");
+                    } else {
+                        System.out.println(data + " not found in the tree.");
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Inorder Traversal:");
+                    inorder(root);
+                    System.out.println();
+                    break;
+
+                case 4:
+                    System.out.println("Preorder Traversal:");
+                    preorder(root);
+                    System.out.println();
+                    break;
+
+                case 5:
+                    System.out.println("Postorder Traversal:");
+                    postorder(root);
+                    System.out.println();
+                    break;
+
+                case 6:
+                    System.out.print("Enter element to search: ");
+                    if (!sc.hasNextInt()) {
+                        System.out.println("Invalid element.");
+                        sc.next();
+                        break;
+                    }
+                    data = sc.nextInt();
+                    if (search(root, data))
+                        System.out.println(data + " found in the tree.");
+                    else
+                        System.out.println(data + " not found in the tree.");
+                    break;
+
+                case 7:
+                    System.out.println("Binary Search Tree Structure:");
+                    display(root, 0);
+                    break;
+
+                case 8:
+                    System.out.println("Exiting...");
+                    sc.close();
+                    System.exit(0);
+                    break;
+
+                default:
+                    System.out.println("Wrong Choice!");
+                    break;
+            }
+        }
+    }
+
+    // Insertion
+    static Node insert(Node root, int data) {
+        if (root == null) {
+            root = new Node(data);
+            return root;
+        }
+        if (data < root.data)
+            root.left = insert(root.left, data);
+        else if (data > root.data)
+            root.right = insert(root.right, data);
+        // if equal, do nothing (no duplicates)
+        return root;
+    }
+
+    // Deletion
+    static Node delete(Node root, int data) {
+        if (root == null) {
+            return null;
+        }
+
+        if (data < root.data) {
+            root.left = delete(root.left, data);
+        } else if (data > root.data) {
+            root.right = delete(root.right, data);
+        } else {
+            // Node to be deleted found
+            // Node with two children
+            if (root.left != null && root.right != null) {
+                Node temp = findMin(root.right);
+                root.data = temp.data;
+                root.right = delete(root.right, temp.data);
+            } else {
+                // One child or no child
+                if (root.left == null)
+                    root = root.right;
+                else
+                    root = root.left;
+            }
+        }
+        return root;
+    }
+
+    // Find minimum node
+    static Node findMin(Node root) {
+        if (root == null)
+            return null;
+        while (root.left != null)
+            root = root.left;
+        return root;
+    }
+
+    // Search operation
+    static boolean search(Node root, int data) {
+        if (root == null)
+            return false;
+        if (root.data == data)
+            return true;
+        else if (data < root.data)
+            return search(root.left, data);
+        else
+            return search(root.right, data);
+    }
+
+    // Traversals
+    static void preorder(Node root) {
+        if (root != null) {
+            System.out.print(root.data + " ");
+            preorder(root.left);
+            preorder(root.right);
+        }
+    }
+
+    static void inorder(Node root) {
+        if (root != null) {
+            inorder(root.left);
+            System.out.print(root.data + " ");
+            inorder(root.right);
+        }
+    }
+
+    static void postorder(Node root) {
+        if (root != null) {
+            postorder(root.left);
+            postorder(root.right);
+            System.out.print(root.data + " ");
+        }
+    }
+
+    // Display operation (sideways tree view)
+    static void display(Node root, int space) {
+        final int COUNT = 5; // spacing between levels
+        if (root == null)
+            return;
+
+        // Increase distance between levels
+        space += COUNT;
+
+        // Process right child first
+        display(root.right, space);
+
+        // Print current node after space
+        System.out.println();
+        for (int i = COUNT; i < space; i++)
+            System.out.print(" ");
+        System.out.println(root.data);
+
+        // Process left child
+        display(root.left, space);
+    }
+}
