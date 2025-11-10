@@ -1,0 +1,64 @@
+import java.util.Scanner;
+public class Searchiing {
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter type of Searching");
+        System.out.println("1) Linear Search");
+        System.out.println("2)Binary Search");
+        int Search= sc.nextInt();
+        
+        switch (Search) {
+            case 1:
+                System.out.println("Enter array size: ");
+                int size = sc.nextInt();
+                int[] customer_id= new int[size];
+                System.out.println("enter Customer Id");
+                for(int i=0; i<customer_id.length;i++){
+                    customer_id[i]=sc.nextInt();
+                }
+                System.out.println("Enter Search key: ");
+                int key=sc.nextInt();
+                int ans = linear_search(customer_id,key);
+                if (ans!=-1){
+                    System.out.println(" Customer id found at index : "+ ans);
+                }
+                else{
+                    System.out.println("Customer id not found");
+                }
+                break;
+            case 2:
+                int[] Customer_id = {11,12,13,14,15,16};
+                System.out.println("Enter Search key: ");
+                int Key = sc.nextInt();
+                int Ans = binary_Search(Customer_id,Key);
+                if(Ans !=-1){
+                    System.out.println(" Customer id found at index : "+ Ans);
+                }else{
+                    System.out.println(" Customer id not found ");
+                }
+        }
+    }
+    public static int linear_search(int[] arr,int key){
+        for(int i=0; i< arr.length;i++){
+            if(arr[i] ==key){
+                return  i;
+            }
+        }
+        return -1;
+    }
+    public static int binary_Search(int[] arr,int key){
+        int l=0;
+        int h= arr.length-1;
+        while(l<=h){
+            int mid = l+h/2; 
+            if(arr[mid]==key){
+                return mid;
+            }else if (arr[mid]<key){
+                l = mid+1;
+            }else{
+                h= mid-1;
+            }
+        }
+        return -1;
+    }
+}
