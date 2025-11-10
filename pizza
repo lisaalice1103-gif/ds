@@ -1,0 +1,81 @@
+import java.util.*;
+
+class PizzaDelivery {
+
+    // Represents a weighted edge to a neighboring location
+    static class Edge {
+        int target;
+        int time; // travel time
+        Edge(int target, int time) {
+            this.target = target;
+            this.time = time;
+        }
+    }
+
+    // Method to find minimum delivery time to all customers from the pizza shop
+    public static int[] dijkstra(List<List<Edge>> graph, int source) {
+        int n = graph.size();
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[source] = 0;
+
+        PriorityQueue<Edge> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e.time));
+        pq.offer(new Edge(source, 0));
+
+        while (!pq.isEmpty()) {
+            Edge current = pq.poll();
+            int node = current.target;
+            int currentDist = current.time;
+
+            if (currentDist > dist[node]) continue; // ignore if not optimal
+
+            for (Edge edge : graph.get(node)) {
+                int newDist = dist[node] + edge.time;
+                if (newDist < dist[edge.target]) {
+                    dist[edge.target] = newDist;
+                    pq.offer(new Edge(edge.target, newDist));
+                }
+            }
+        }
+        return dist;
+    }
+
+    public static void main(String[] args) {
+        int locations = 5; // number of locations including the pizza shop
+        int pizzaShop = 0; // assuming pizza shop is at node 0
+
+        // Graph initialization
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i < locations; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        // Add edges: graph.get(node).add(new Edge(neighbor, time));
+        // Example edges (bidirectional):
+        graph.get(0).add(new Edge(1, 10));
+        graph.get(1).add(new Edge(0, 10));
+
+        graph.get(0).add(new Edge(2, 5));
+        graph.get(2).add(new Edge(0, 5));
+
+        graph.get(1).add(new Edge(2, 2));
+        graph.get(2).add(new Edge(1, 2));
+
+        graph.get(1).add(new Edge(3, 1));
+        graph.get(3).add(new Edge(1, 1));
+
+        graph.get(2).add(new Edge(3, 9));
+        graph.get(3).add(new Edge(2, 9));
+
+        graph.get(3).add(new Edge(4, 4));
+        graph.get(4).add(new Edge(3, 4));
+
+        // Get shortest delivery times to all locations
+        int[] deliveryTimes = dijkstra(graph, pizzaShop);
+
+        // Output results
+        for (int i = 0; i < deliveryTimes.length; i++) {
+            System.out.println("Minimum time to deliver pizza to location " + i + " is " + deliveryTimes[i]);
+        }
+    }
+}
